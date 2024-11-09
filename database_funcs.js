@@ -128,25 +128,3 @@ export async function getThreadIdByText(threadText) {
     throw new Error("Failed to retrieve thread ID");
   }
 }
-
-// Function to get all threads
-export async function getThreads() {
-  try {
-    const threadsRef = collection(db, 'Threads');
-    const snapshot = await getDocs(threadsRef);
-
-    const threads = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      threads.push({
-        id: doc.id,
-        thread_name: data.thread_name,
-      });
-    });
-
-    return threads;
-  } catch (error) {
-    console.error("Error fetching threads:", error);
-    throw new Error("Failed to retrieve threads");
-  }
-}
