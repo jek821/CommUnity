@@ -1,0 +1,106 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyDPUwZYkuKiwuUV-6e4WunUfxvgUL46pgw",
+  authDomain: "your-app.firebaseapp.com",
+  projectId: "community-f4809",
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+
+// Add thread function
+function addThread(threadName) {
+  const threadRef = db.collection("Threads").doc(); // Auto-generate thread ID
+
+  // Set thread data
+  threadRef.set({
+    thread_name: threadName,
+  })
+  .then(() => {
+    console.log("Thread added successfully with ID:", threadRef.id);
+  })
+  .catch((error) => {
+    console.error("Error adding thread:", error);
+  });
+}
+
+// Function to add new comment to a thread
+
+function addCommentToThread(threadId, commentText) {
+  const commentsRef = db.collection("Threads").doc(threadId).collection("Comments").doc(); // Auto-generate comment ID
+
+  // Set comment data
+  commentsRef.set({
+    text: commentText,
+    upvotes: 0,
+  })
+  .then(() => {
+    console.log("Comment added successfully with ID:", commentsRef.id);
+  })
+  .catch((error) => {
+    console.error("Error adding comment:", error);
+  });
+}
+
+
+// increment comment upvote count function
+
+function incrementUpvote(threadId, commentId) {
+  const commentRef = db.collection("Threads").doc(threadId).collection("Comments").doc(commentId);
+
+  commentRef.update({
+    upvotes: firebase.firestore.FieldValue.increment(1)
+  })
+  .then(() => {
+    console.log("Upvote incremented successfully for comment ID:", commentId);
+  })
+  .catch((error) => {
+    console.error("Error incrementing upvote:", error);
+  });
+}
+
+
+// decrement comment upvote count function 
+
+function decrementUpvote(threadId, commentId) {
+  const commentRef = db.collection("Threads").doc(threadId).collection("Comments").doc(commentId);
+
+  commentRef.update({
+    upvotes: firebase.firestore.FieldValue.increment(-1)
+  })
+  .then(() => {
+    console.log("Upvote decremented successfully for comment ID:", commentId);
+  })
+  .catch((error) => {
+    console.error("Error decrementing upvote:", error);
+  });
+}
+
+
+// Function to get dictionary (comment, upvote_count) pairs given a thread ID
+
+async function getCommentsWithUpvotes(threadId) {
+  const commentsRef = db.collection("Threads").doc(threadId).collection("Comments");
+  
+  // Query Firestore to get all comments for the specified thread
+  const snapshot = await commentsRef.get();
+  
+  // Create a dictionary to store comment text and upvote counts
+  const commentsDict = {};
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    const commentText = data.text;
+    const upvotes = data.upvotes || 0;
+    
+    // Add each comment's text as a key and upvote count as the value
+    commentsDict[commentText] = upvotes;
+  });
+
+  // Convert the dictionary to JSON format
+  const commentsJson = JSON.stringify(commentsDict);
+  
+  return commentsJson;
+}
+
