@@ -89,8 +89,10 @@ export async function getCommentsWithUpvotes(threadId) {
     const threadName = threadDoc.data().thread_name;
     const commentsRef = collection(db, "Threads", threadId, "Comments");
     const snapshot = await getDocs(commentsRef);
+    const threadZip = threadDoc.data().zip_code;
+    const threadCity = threadDoc.data().city;
 
-    const commentsDict = { thread_name: threadName };
+    const commentsDict = { thread_name: threadName, thread_zip: threadZip, thread_city: threadCity };
 
     snapshot.forEach((doc) => {
       const data = doc.data();
