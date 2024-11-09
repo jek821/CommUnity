@@ -7,7 +7,8 @@ import {
   updateDoc,
   increment,
   getDoc,
-  getDocs
+  getDocs,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 
 // Function to add a new thread
