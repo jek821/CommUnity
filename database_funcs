@@ -104,3 +104,21 @@ async function getCommentsWithUpvotes(threadId) {
   return commentsJson;
 }
 
+
+//function that takes in threadText and returns the thread ID
+async function getThreadIdByText(threadText) {
+  const threadsRef = db.collection('threads'); // Replace 'threads' with your actual collection name
+  const snapshot = await threadsRef.where('text', '==', threadText).get();
+
+  if (snapshot.empty) {
+    console.log('No matching thread found.');
+    return null;
+  }
+
+  let threadId = null;
+  snapshot.forEach(doc => {
+    threadId = doc.id; // This will get the document ID, which is the thread ID
+  });
+
+  return threadId;
+}
