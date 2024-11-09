@@ -78,31 +78,44 @@ function decrementUpvote(threadId, commentId) {
 }
 
 
-// Function to get dictionary (comment, upvote_count) pairs given a thread ID
-
 async function getCommentsWithUpvotes(threadId) {
-  const commentsRef = db.collection("Threads").doc(threadId).collection("Comments");
-  
-  // Query Firestore to get all comments for the specified thread
-  const snapshot = await commentsRef.get();
-  
-  // Create a dictionary to store comment text and upvote counts
-  const commentsDict = {};
+  try {
+    // Reference to the thread document
+    const threadDocRef = db.collection("Threads").doc(threadId);
 
-  snapshot.forEach((doc) => {
-    const data = doc.data();
-    const commentText = data.text;
-    const upvotes = data.upvotes || 0;
-    
-    // Add each comment's text as a key and upvote count as the value
-    commentsDict[commentText] = upvotes;
-  });
+    // Get the thread document to access the thread_name field
+    const threadDoc = await threadDocRef.get();
+    if (!threadDoc.exists) {
+      throw new Error("Thread does not exist");
+    }
 
-  // Convert the dictionary to JSON format
-  const commentsJson = JSON.stringify(commentsDict);
-  
-  return commentsJson;
+    const threadName = threadDoc.data().thread_name; // Access thread_name field
+
+    // Reference to the comments collection within the specified thread
+    const commentsRef = threadDocRef.collection("Comments");
+    const snapshot = await commentsRef.get();
+
+    // Create a dictionary with thread_name and comments with upvote counts
+    const commentsDict = { thread_name: threadName };
+
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const commentText = data.text;
+      const upvotes = data.upvotes || 0;
+      
+      // Add each comment's text as a key and upvote count as the value
+      commentsDict[commentText] = upvotes;
+    });
+
+    // Convert the dictionary to JSON format
+    return JSON.stringify(commentsDict);
+
+  } catch (error) {
+    console.error("Error fetching comments with upvotes:", error);
+    throw new Error("Failed to retrieve comments and thread name");
+  }
 }
+
 
 
 //function that takes in threadText and returns the thread ID
