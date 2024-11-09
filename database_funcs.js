@@ -14,12 +14,14 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 
 // Add thread function
-export async function addThread(threadName) {
+export async function addThread(threadName, zipCode, city) {
   try {
     const threadRef = doc(collection(db, "Threads")); // Auto-generate thread ID
 
     await setDoc(threadRef, {
       thread_name: threadName,
+      city: city,
+      zip_code: zipCode;
     });
 
     console.log("Thread added successfully with ID:", threadRef.id);
