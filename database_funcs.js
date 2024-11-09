@@ -13,12 +13,11 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 
-// Add thread function
+import { addDoc, collection } from "firebase/firestore"; 
+
 export async function addThread(threadName, zipCode, city) {
   try {
-    const threadRef = doc(collection(db, "Threads")); // Auto-generate thread ID
-
-    await setDoc(threadRef, {
+    const threadRef = await addDoc(collection(db, "Threads"), { // Auto-generate thread ID
       thread_name: threadName,
       city: city,
       zip_code: zipCode
@@ -29,6 +28,7 @@ export async function addThread(threadName, zipCode, city) {
     console.error("Error adding thread:", error);
   }
 }
+
 
 // Function to add new comment to a thread
 export async function addCommentToThread(threadId, commentText) {
