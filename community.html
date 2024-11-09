@@ -219,10 +219,15 @@
 
         // Function to display threads
         async function displayThreads() {
+            // Set a timeout to hide the spinner after 3 seconds
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+            }, 2000);
+        
             try {
                 const threads = await getAllThreads();
                 postsContainer.innerHTML = ''; // Clear existing posts
-
+        
                 if (threads.length === 0) {
                     postsContainer.innerHTML = '<p class="text-gray-500">No threads available. Be the first to post!</p>';
                 } else {
@@ -231,16 +236,15 @@
                         postsContainer.appendChild(threadElement);
                     });
                 }
-
-                // Show posts container and hide loading
-                loadingIndicator.classList.add('hidden');
+        
+                // Show posts container
                 postsContainer.classList.remove('hidden');
             } catch (error) {
                 console.error('Error displaying threads:', error);
                 alert('Failed to load threads. Please try again later.');
-                loadingIndicator.classList.add('hidden');
             }
         }
+        
 
         // Function to fetch and display comments
         async function fetchComments(threadId) {
