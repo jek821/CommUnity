@@ -3,27 +3,6 @@
 Empowering Local Voices for Urban Transformation
 
 ---
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Problem Statement](#problem-statement)
-- [Our Solution](#our-solution)
-- [Key Features](#key-features)
-- [Technical Implementation](#technical-implementation)
-  - [Architecture Overview](#architecture-overview)
-  - [Frontend](#frontend)
-  - [Backend](#backend)
-  - [AI Integration](#ai-integration)
-  - [Email Handling](#email-handling)
-- [Demo Walkthrough](#demo-walkthrough)
-- [Challenges Faced](#challenges-faced)
-- [Future Enhancements](#future-enhancements)
-- [Conclusion](#conclusion)
-- [Team](#team)
-
----
-
 ## Introduction
 
 **CommUnity** is an innovative platform designed to empower local communities by giving residents a direct and impactful voice in the changes they wish to see. By harnessing the power of collective input and AI-driven synthesis, CommUnity bridges the gap between citizens and officials, facilitating meaningful dialogue and fostering urban improvements.
@@ -131,11 +110,8 @@ CommUnity aspires to transform urban development by amplifying the collective vo
 
 ## Team
 
-- **Alice Smith**: Frontend Developer
-- **Bob Johnson**: Backend Developer
-- **Carol Williams**: AI/ML Specialist
-- **Dave Brown**: Project Manager
-
-*Contact information or links to LinkedIn profiles can be added here.*
-
+- **Sammy Tran**: Frontend Developer
+- **Quinn Tran**: Frontend Developer
+- **Jacob Kriss**: Backend Developer / AI integrator 
+- **Jordan Ye**: Full Stack Developer 
 ---
