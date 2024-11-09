@@ -4,94 +4,320 @@
 <head>
     <meta charset="UTF-8">
     <title>Community - CommUnity</title>
+    <!-- Include Tailwind CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Include Roboto Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .btn-animate:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
+        }
+        /* Loading Spinner Styles */
+        #loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        /* Modal Styles */
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        body.modal-open {
+            overflow: hidden;
+        }
+        /* Fade-in Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <header class="text-center py-6 bg-blue-600 text-white">
+    <!-- Header section with title and navigation -->
+    <header class="text-center py-6 bg-blue-600 text-white shadow-md">
         <h1 class="text-4xl font-bold">Community Hub</h1>
-        <nav class="mt-4">
-            <a href="index.html" class="text-white hover:underline mx-2">Home</a>
-            <a href="login.html" class="text-white hover:underline mx-2">Logout</a>
+        <nav class="mt-4 flex justify-center space-x-4">
+            <a href="index.html" class="text-white hover:text-blue-300 flex items-center">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="login.html" class="text-white hover:text-blue-300 flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
         </nav>
     </header>
 
-    <main class="max-w-3xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
-        <h2 class="text-2xl font-semibold mb-4">Submit a New Post</h2>
-        <form id="threadForm" class="space-y-4">
-            <input 
-                type="text" 
-                id="threadNameInput" 
-                placeholder="Enter your thread title here..." 
-                required 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-            <input 
-                type="text" 
-                id="cityInput" 
-                placeholder="Enter your city..." 
-                required 
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-            <input 
-                type="text" 
-                id="zipCodeInput" 
-                placeholder="Enter your zip code..." 
-                required 
-                pattern="\d{5}" 
-                title="Please enter a valid 5-digit zip code."
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-            <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Thread</button>
-        </form>
+    <!-- Main content area -->
+    <main class="max-w-4xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
+        <!-- New Post Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Submit a New Post</h2>
+            <form id="threadForm" class="space-y-4">
+                <div>
+                    <label for="threadNameInput" class="block text-sm font-medium text-gray-700">Thread Title</label>
+                    <input 
+                        type="text" 
+                        id="threadNameInput" 
+                        placeholder="Enter your thread title here..." 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    >
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="cityInput" class="block text-sm font-medium text-gray-700">City</label>
+                        <input 
+                            type="text" 
+                            id="cityInput" 
+                            placeholder="Enter your city..." 
+                            required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        >
+                    </div>
+                    <div>
+                        <label for="zipCodeInput" class="block text-sm font-medium text-gray-700">Zip Code</label>
+                        <input 
+                            type="text" 
+                            id="zipCodeInput" 
+                            placeholder="Enter your zip code..." 
+                            required 
+                            pattern="\d{5}" 
+                            title="Please enter a valid 5-digit zip code."
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        >
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded btn-animate flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Add Thread
+                </button>
+            </form>
+        </section>
 
-        <h2 class="text-2xl font-semibold mt-8 mb-4">Top Posts in Your Region</h2>
-        <div id="posts-container" class="space-y-4">
-            <!-- Posts will be dynamically populated here -->
-        </div>
+        <!-- Posts Section -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-4">Top Posts in Your Region</h2>
+            <!-- Loading Indicator -->
+            <div id="loading" class="text-center mb-4">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+            </div>
+            <div id="posts-container" class="space-y-4 hidden">
+                <!-- Posts will be dynamically populated here -->
+            </div>
+        </section>
     </main>
 
-    <!-- Import Firebase functions and custom scripts -->
+    <!-- Comments Modal -->
+    <div id="commentsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg w-11/12 max-w-2xl relative fade-in">
+            <button id="closeCommentsModal" class="absolute top-2 right-2 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
+            <h2 id="modalThreadTitle" class="text-2xl font-semibold mb-4"></h2>
+            <div id="commentsSection" class="max-h-96 overflow-y-auto mb-4">
+                <!-- Comments will be displayed here -->
+                <div id="commentsContainer" class="space-y-4">
+                    <!-- Comment items -->
+                </div>
+            </div>
+            <form id="commentForm" class="space-y-4">
+                <textarea 
+                    id="commentInput" 
+                    placeholder="Add a comment..." 
+                    required 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                ></textarea>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded btn-animate flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Post Comment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script type="module">
-        import { addThread, getThreadIdByText } from './database_funcs.js';
+        import { 
+            addThread, 
+            getAllThreads, 
+            getCommentsWithUpvotes, 
+            addCommentToThread, 
+            incrementUpvote, 
+            decrementUpvote 
+        } from './database_funcs.js';
+
+        const threadForm = document.getElementById('threadForm');
+        const postsContainer = document.getElementById('posts-container');
+        const loadingIndicator = document.getElementById('loading');
+        const commentsModal = document.getElementById('commentsModal');
+        const closeCommentsModal = document.getElementById('closeCommentsModal');
+        const modalThreadTitle = document.getElementById('modalThreadTitle');
+        const commentsContainerDiv = document.getElementById('commentsContainer');
+        const commentForm = document.getElementById('commentForm');
+        const commentInput = document.getElementById('commentInput');
+        let currentThreadId = null;
+
+        // Function to open comments modal
+        function openCommentsModal(thread) {
+            currentThreadId = thread.id;
+            modalThreadTitle.textContent = thread.thread_name;
+            commentsContainerDiv.innerHTML = '';
+            fetchComments(thread.id);
+            commentsModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        // Function to close comments modal
+        function closeModal() {
+            commentsModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            commentForm.reset();
+            currentThreadId = null;
+        }
+
+        closeCommentsModal.addEventListener('click', closeModal);
+
+        // Function to create post element
+        function createPostElement(thread) {
+            const threadDiv = document.createElement('div');
+            threadDiv.className = 'bg-gray-100 p-6 rounded-lg shadow-md hover:bg-gray-200 transition-colors duration-200';
+
+            const threadHeader = document.createElement('div');
+            threadHeader.className = 'flex justify-between items-center mb-4';
+
+            const threadTitle = document.createElement('h3');
+            threadTitle.className = 'text-xl font-bold text-blue-600';
+            threadTitle.textContent = thread.thread_name;
+
+            const viewCommentsButton = document.createElement('button');
+            viewCommentsButton.className = 'text-blue-500 hover:text-blue-700 flex items-center';
+            viewCommentsButton.innerHTML = '<i class="fas fa-comments mr-2"></i> View Comments';
+            viewCommentsButton.addEventListener('click', () => openCommentsModal(thread));
+
+            threadHeader.appendChild(threadTitle);
+            threadHeader.appendChild(viewCommentsButton);
+
+            const threadLocation = document.createElement('p');
+            threadLocation.className = 'text-gray-600';
+            threadLocation.textContent = `City: ${thread.city}, Zip Code: ${thread.zip_code}`;
+
+            threadDiv.appendChild(threadHeader);
+            threadDiv.appendChild(threadLocation);
+
+            return threadDiv;
+        }
 
         // Function to display threads
         async function displayThreads() {
             try {
-                const threads = await getThreadIdByText();
-                const postsContainer = document.getElementById('posts-container');
+                const threads = await getAllThreads();
                 postsContainer.innerHTML = ''; // Clear existing posts
 
-                threads.forEach(thread => {
-                    const threadDiv = document.createElement('div');
-                    threadDiv.className = 'bg-gray-100 p-4 rounded shadow';
+                if (threads.length === 0) {
+                    postsContainer.innerHTML = '<p class="text-gray-500">No threads available. Be the first to post!</p>';
+                } else {
+                    threads.forEach(thread => {
+                        const threadElement = createPostElement(thread);
+                        postsContainer.appendChild(threadElement);
+                    });
+                }
 
-                    const threadTitle = document.createElement('h3');
-                    threadTitle.className = 'text-xl font-bold';
-                    threadTitle.textContent = thread.thread_name;
-
-                    const threadLocation = document.createElement('p');
-                    threadLocation.className = 'text-gray-600';
-                    threadLocation.textContent = `City: ${thread.city}, Zip Code: ${thread.zip_code}`;
-
-                    const viewCommentsButton = document.createElement('button');
-                    viewCommentsButton.className = 'mt-2 text-blue-600 hover:underline';
-                    viewCommentsButton.textContent = 'View Comments';
-                    viewCommentsButton.onclick = () => {
-                        window.location.href = `thread.html?threadId=${thread.id}`;
-                    };
-
-                    threadDiv.appendChild(threadTitle);
-                    threadDiv.appendChild(threadLocation);
-                    threadDiv.appendChild(viewCommentsButton);
-
-                    postsContainer.appendChild(threadDiv);
-                });
+                // Show posts container and hide loading
+                loadingIndicator.classList.add('hidden');
+                postsContainer.classList.remove('hidden');
             } catch (error) {
                 console.error('Error displaying threads:', error);
+                alert('Failed to load threads. Please try again later.');
+                loadingIndicator.classList.add('hidden');
             }
         }
 
-        document.getElementById('threadForm').addEventListener('submit', async (event) => {
+        // Function to fetch and display comments
+        async function fetchComments(threadId) {
+            try {
+                const data = await getCommentsWithUpvotes(threadId);
+                commentsContainerDiv.innerHTML = '';
+
+                if (data.comments.length === 0) {
+                    commentsContainerDiv.innerHTML = '<p class="text-gray-500">No comments yet. Be the first to comment!</p>';
+                } else {
+                    data.comments.forEach(comment => {
+                        const commentElement = createCommentElement(comment);
+                        commentsContainerDiv.appendChild(commentElement);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+                alert('Failed to load comments. Please try again later.');
+            }
+        }
+
+        // Function to create comment element
+        function createCommentElement(comment) {
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'bg-gray-50 p-4 rounded shadow comment-animate flex flex-col';
+
+            const textP = document.createElement('p');
+            textP.textContent = comment.text;
+            textP.className = 'mb-2 text-gray-800';
+
+            const upvotesP = document.createElement('p');
+            upvotesP.textContent = `Upvotes: ${comment.upvotes}`;
+            upvotesP.className = 'mb-2 text-gray-600';
+
+            const voteButtonsDiv = document.createElement('div');
+            voteButtonsDiv.className = 'flex space-x-4';
+
+            // Upvote button
+            const upvoteButton = document.createElement('button');
+            upvoteButton.className = 'flex items-center text-green-500 hover:text-green-600';
+            upvoteButton.innerHTML = '<i class="fas fa-thumbs-up mr-1"></i> Upvote';
+            upvoteButton.onclick = async () => {
+                try {
+                    await incrementUpvote(currentThreadId, comment.id);
+                    await fetchComments(currentThreadId);
+                } catch (error) {
+                    console.error('Error incrementing upvote:', error);
+                    alert('Failed to upvote. Please try again.');
+                }
+            };
+
+            // Downvote button
+            const downvoteButton = document.createElement('button');
+            downvoteButton.className = 'flex items-center text-red-500 hover:text-red-600';
+            downvoteButton.innerHTML = '<i class="fas fa-thumbs-down mr-1"></i> Downvote';
+            downvoteButton.onclick = async () => {
+                try {
+                    await decrementUpvote(currentThreadId, comment.id);
+                    await fetchComments(currentThreadId);
+                } catch (error) {
+                    console.error('Error decrementing upvote:', error);
+                    alert('Failed to downvote. Please try again.');
+                }
+            };
+
+            voteButtonsDiv.appendChild(upvoteButton);
+            voteButtonsDiv.appendChild(downvoteButton);
+
+            commentDiv.appendChild(textP);
+            commentDiv.appendChild(upvotesP);
+            commentDiv.appendChild(voteButtonsDiv);
+
+            return commentDiv;
+        }
+
+        // Event listener for thread form submission
+        threadForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const threadName = document.getElementById('threadNameInput').value.trim();
             const city = document.getElementById('cityInput').value.trim();
@@ -102,16 +328,38 @@
                 return;
             }
 
-            await addThread(threadName, zipCode, city);
-            document.getElementById('threadForm').reset(); // Clear all inputs
-            await displayThreads(); // Refresh the threads list
+            try {
+                await addThread(threadName, zipCode, city);
+                threadForm.reset(); // Clear all inputs
+                await displayThreads(); // Refresh the threads list
+            } catch (error) {
+                console.error('Error adding thread:', error);
+                alert('Failed to add thread. Please try again.');
+            }
+        });
+
+        // Event listener for comment form submission
+        commentForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const commentText = commentInput.value.trim();
+
+            if (!commentText) {
+                alert('Please enter a comment.');
+                return;
+            }
+
+            try {
+                await addCommentToThread(currentThreadId, commentText);
+                commentForm.reset();
+                await fetchComments(currentThreadId);
+            } catch (error) {
+                console.error('Error adding comment:', error);
+                alert('Failed to add comment. Please try again.');
+            }
         });
 
         // Display threads on page load
         displayThreads();
     </script>
-
-    <!-- Include Firebase SDKs -->
-    <!-- Remove duplicate script tags if any -->
 </body>
 </html>
