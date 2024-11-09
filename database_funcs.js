@@ -21,7 +21,7 @@ export async function addThread(threadName, zipCode, city) {
     await setDoc(threadRef, {
       thread_name: threadName,
       city: city,
-      zip_code: zipCode;
+      zip_code: zipCode
     });
 
     console.log("Thread added successfully with ID:", threadRef.id);
