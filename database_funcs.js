@@ -30,12 +30,10 @@ export async function addThread(threadName, zipCode, city) {
 }
 
 
-// Function to add new comment to a thread
+// function to add comment to thread
 export async function addCommentToThread(threadId, commentText) {
   try {
-    const commentsRef = doc(collection(db, "Threads", threadId, "Comments")); // Auto-generate comment ID
-
-    await setDoc(commentsRef, {
+    const commentsRef = await addDoc(collection(db, "Threads", threadId, "Comments"), { // Auto-generate comment ID
       text: commentText,
       upvotes: 0,
     });
@@ -45,7 +43,6 @@ export async function addCommentToThread(threadId, commentText) {
     console.error("Error adding comment:", error);
   }
 }
-
 // Increment comment upvote count function
 export async function incrementUpvote(threadId, commentId) {
   try {
