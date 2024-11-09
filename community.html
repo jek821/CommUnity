@@ -26,6 +26,24 @@
                 required 
                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
+            <!-- New Input for City -->
+            <input 
+                type="text" 
+                id="cityInput" 
+                placeholder="Enter your city..." 
+                required 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+            <!-- New Input for Zip Code -->
+            <input 
+                type="text" 
+                id="zipCodeInput" 
+                placeholder="Enter your zip code..." 
+                required 
+                pattern="\d{5}" 
+                title="Please enter a valid 5-digit zip code."
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
             <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Thread</button>
         </form>
 
@@ -54,6 +72,10 @@
                     threadTitle.className = 'text-xl font-bold';
                     threadTitle.textContent = thread.thread_name;
 
+                    const threadLocation = document.createElement('p');
+                    threadLocation.className = 'text-gray-600';
+                    threadLocation.textContent = `City: ${thread.city}, Zip Code: ${thread.zip_code}`;
+
                     const viewCommentsButton = document.createElement('button');
                     viewCommentsButton.className = 'mt-2 text-blue-600 hover:underline';
                     viewCommentsButton.textContent = 'View Comments';
@@ -63,6 +85,7 @@
                     };
 
                     threadDiv.appendChild(threadTitle);
+                    threadDiv.appendChild(threadLocation);
                     threadDiv.appendChild(viewCommentsButton);
 
                     postsContainer.appendChild(threadDiv);
@@ -74,9 +97,18 @@
 
         document.getElementById('threadForm').addEventListener('submit', async (event) => {
             event.preventDefault();
-            const threadName = document.getElementById('threadNameInput').value;
-            await addThread(threadName);
-            document.getElementById('threadNameInput').value = ''; // Clear input
+            const threadName = document.getElementById('threadNameInput').value.trim();
+            const city = document.getElementById('cityInput').value.trim();
+            const zipCode = document.getElementById('zipCodeInput').value.trim();
+
+            // Basic validation (optional, since HTML5 validation is already in place)
+            if (!threadName || !city || !zipCode) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            await addThread(threadName, zipCode, city);
+            document.getElementById('threadForm').reset(); // Clear all inputs
             await displayThreads(); // Refresh the threads list
         });
 
