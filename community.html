@@ -17,22 +17,35 @@
 
     <main class="max-w-3xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">Submit a New Post</h2>
-        <form action="/submit-post" method="post" class="space-y-4">
-            <textarea name="post" placeholder="Share your idea or concern..." required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-            <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Post</button>
+        <form id="threadForm" class="space-y-4">
+            <input 
+                type="text" 
+                id="threadNameInput" 
+                placeholder="Enter your thread title here..." 
+                required 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+            <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Thread</button>
         </form>
 
         <h2 class="text-2xl font-semibold mt-8 mb-4">Top Posts in Your Region</h2>
-        <div class="space-y-4">
-            <!-- Example post structure -->
-            <div class="p-4 bg-gray-100 rounded-lg shadow-md">
-                <p>Example community post content here...</p>
-                <div class="mt-2 flex items-center">
-                    <button class="bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700 mr-2">Upvote</button>
-                    <span>Upvotes: 10</span>
-                </div>
-            </div>
+        <div id="posts-container" class="space-y-4">
+            <!-- Posts will be dynamically populated here -->
         </div>
     </main>
+
+    <!-- Import Firebase functions -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="database_funcs.js"></script>
+    <script type="module">
+        import { addThread } from './database_funcs.js';
+
+        document.getElementById('threadForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const threadName = document.getElementById('threadNameInput').value;
+            await addThread(threadName);
+            document.getElementById('threadNameInput').value = ''; // Clear input
+        });
+    </script>
 </body>
 </html>
