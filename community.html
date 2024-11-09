@@ -1,9 +1,8 @@
-<!-- community.html-->
+<!-- community.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community - CommUnity</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -26,7 +25,6 @@
                 required 
                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
-            <!-- New Input for City -->
             <input 
                 type="text" 
                 id="cityInput" 
@@ -34,7 +32,6 @@
                 required 
                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
-            <!-- New Input for Zip Code -->
             <input 
                 type="text" 
                 id="zipCodeInput" 
@@ -55,12 +52,12 @@
 
     <!-- Import Firebase functions and custom scripts -->
     <script type="module">
-        import { addThread, getThreads } from './database_funcs.js';
+        import { addThread, getThreadIdByText } from './database_funcs.js';
 
         // Function to display threads
         async function displayThreads() {
             try {
-                const threads = await getThreads();
+                const threads = await getThreadIdByText();
                 const postsContainer = document.getElementById('posts-container');
                 postsContainer.innerHTML = ''; // Clear existing posts
 
@@ -80,7 +77,6 @@
                     viewCommentsButton.className = 'mt-2 text-blue-600 hover:underline';
                     viewCommentsButton.textContent = 'View Comments';
                     viewCommentsButton.onclick = () => {
-                        // Redirect to thread page or display comments
                         window.location.href = `thread.html?threadId=${thread.id}`;
                     };
 
@@ -101,7 +97,6 @@
             const city = document.getElementById('cityInput').value.trim();
             const zipCode = document.getElementById('zipCodeInput').value.trim();
 
-            // Basic validation (optional, since HTML5 validation is already in place)
             if (!threadName || !city || !zipCode) {
                 alert('Please fill in all fields.');
                 return;
@@ -117,9 +112,6 @@
     </script>
 
     <!-- Include Firebase SDKs -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js"></script>
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="database_funcs.js"></script>
+    <!-- Remove duplicate script tags if any -->
 </body>
 </html>
