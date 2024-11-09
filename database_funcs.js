@@ -13,7 +13,6 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 
-import { addDoc, collection } from "firebase/firestore"; 
 
 export async function addThread(threadName, zipCode, city) {
   try {
