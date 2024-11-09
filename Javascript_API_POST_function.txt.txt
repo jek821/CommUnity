@@ -1,0 +1,25 @@
+// Endpoint URL of your deployed Flask API
+const endpoint = "https://ltz8klakk4.execute-api.us-east-1.amazonaws.com/dev/generate-email";
+
+// Function to make the POST request and return the unpacked email content
+async function sendPostRequest(data) {
+    try {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: data  // Assuming data is already in JSON format
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        return result.generated_email;  // Unpacked email content
+    } catch (error) {
+        console.error("Error sending POST request:", error);
+        return null;  // Return null if there was an error
+    }
+}
