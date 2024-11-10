@@ -24,30 +24,6 @@ export async function addThread(threadName, zipCode, city) {
   }
 }
 
-// Modified function to get all threads (renamed to getThreadIdByText)
-export async function getThreadIdByText() {
-  try {
-    const threadsRef = collection(db, 'Threads');
-    const snapshot = await getDocs(threadsRef);
-
-    const threads = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      threads.push({
-        id: doc.id,
-        thread_name: data.thread_name,
-        city: data.city,
-        zip_code: data.zip_code
-      });
-    });
-
-    return threads;
-  } catch (error) {
-    console.error('Error fetching threads:', error);
-    throw new Error('Failed to retrieve threads');
-  }
-}
-
 // Function to add comment to thread
 export async function addCommentToThread(threadId, commentText) {
   try {
@@ -125,7 +101,6 @@ export async function getCommentsWithUpvotes(threadId) {
     throw new Error("Failed to retrieve comments and thread name");
   }
 }
-
 
 // Function to get all threads
 export async function getAllThreads() {

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Community - CommUnity</title>
+    <title>Community Hub - Urban Upgrades</title>
     <!-- Include Tailwind CSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <!-- Include Font Awesome for icons -->
@@ -41,6 +41,19 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+        /* City Display Styles */
+        .city-display {
+            margin-left: 10px;
+            min-width: 120px;
+            text-align: left;
+            color: #4B5563; /* Tailwind's gray-700 */
+            font-size: 0.875rem; /* Tailwind's text-sm */
+        }
+        /* Input Container */
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -59,6 +72,27 @@
 
     <!-- Main content area -->
     <main class="max-w-4xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
+        <!-- Location Selection Section -->
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold mb-2">Enter Your ZIP Code</h2>
+            <div class="space-y-2">
+                <div class="input-container">
+                    <input 
+                        type="text" 
+                        id="locationZipInput" 
+                        placeholder="Enter your ZIP code..." 
+                        required 
+                        pattern="\d{5}" 
+                        title="Please enter a valid 5-digit ZIP code." 
+                        maxlength="5"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    >
+                    <p id="locationCityDisplay" class="city-display"></p>
+                </div>
+                <small class="text-gray-500">We'll display your city once a valid ZIP code is entered.</small>
+            </div>
+        </section>
+
         <!-- New Post Section -->
         <section class="mb-8">
             <h2 class="text-2xl font-semibold mb-4">Submit a New Post</h2>
@@ -73,29 +107,22 @@
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     >
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="cityInput" class="block text-sm font-medium text-gray-700">City</label>
+                <div>
+                    <label for="threadZipCodeInput" class="block text-sm font-medium text-gray-700">Zip Code</label>
+                    <div class="input-container">
                         <input 
                             type="text" 
-                            id="cityInput" 
-                            placeholder="Enter your city..." 
-                            required 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        >
-                    </div>
-                    <div>
-                        <label for="zipCodeInput" class="block text-sm font-medium text-gray-700">Zip Code</label>
-                        <input 
-                            type="text" 
-                            id="zipCodeInput" 
-                            placeholder="Enter your zip code..." 
+                            id="threadZipCodeInput" 
+                            placeholder="Enter the ZIP code for your post..." 
                             required 
                             pattern="\d{5}" 
-                            title="Please enter a valid 5-digit zip code."
+                            title="Please enter a valid 5-digit ZIP code."
+                            maxlength="5"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         >
+                        <p id="threadCityDisplay" class="city-display"></p>
                     </div>
+                    <small class="text-gray-500">We'll display the city once a valid ZIP code is entered.</small>
                 </div>
                 <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded btn-animate flex items-center justify-center">
                     <i class="fas fa-plus mr-2"></i> Add Thread
@@ -105,7 +132,8 @@
 
         <!-- Posts Section -->
         <section>
-            <h2 class="text-2xl font-semibold mb-4">Top Posts in Your Region</h2>
+            <!-- Updated Title with id -->
+            <h2 id="topPostsTitle" class="text-2xl font-semibold mb-4">Top Posts in Your Region</h2>
             <!-- Loading Indicator -->
             <div id="loading" class="text-center mb-4">
                 <i class="fas fa-spinner fa-spin fa-2x"></i>
@@ -165,7 +193,91 @@
         const commentsContainerDiv = document.getElementById('commentsContainer');
         const commentForm = document.getElementById('commentForm');
         const commentInput = document.getElementById('commentInput');
+        const locationZipInput = document.getElementById('locationZipInput');
+        const locationCityDisplay = document.getElementById('locationCityDisplay');
+        const threadZipCodeInput = document.getElementById('threadZipCodeInput');
+        const threadCityDisplay = document.getElementById('threadCityDisplay');
+        const topPostsTitle = document.getElementById('topPostsTitle'); // Added for dynamic title
+
         let currentThreadId = null;
+        let currentLocation = null; // { city, zip_code }
+
+        // Debounce function to limit API calls
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        // Function to fetch city from ZIP code using Zippopotam.us API
+        async function fetchCity(zipCode) {
+            try {
+                const response = await fetch(`https://api.zippopotam.us/us/${zipCode}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const place = data.places[0];
+                    return {
+                        city: place['place name'],
+                    };
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error fetching city:', error);
+                return null;
+            }
+        }
+
+        // Debounced handler for location ZIP code input
+        const handleLocationZipInput = debounce(async (event) => {
+            const zipCode = event.target.value.trim();
+            if (/^\d{5}$/.test(zipCode)) {
+                const locationData = await fetchCity(zipCode);
+                if (locationData) {
+                    currentLocation = {
+                        zip_code: zipCode,
+                        city: locationData.city,
+                    };
+                    locationCityDisplay.textContent = `${locationData.city}`;
+                    
+                    // Update the title with the city name
+                    topPostsTitle.textContent = `Top Posts in ${locationData.city}`;
+                    
+                    displayThreads(); // Update the threads based on the new location
+                } else {
+                    locationCityDisplay.textContent = 'Invalid ZIP code';
+                    currentLocation = null;
+                    topPostsTitle.textContent = 'Top Posts in Your Region'; // Reset title
+                    postsContainer.innerHTML = '<p class="text-gray-500">Please enter a valid ZIP code to view threads.</p>';
+                }
+            } else {
+                locationCityDisplay.textContent = '';
+                currentLocation = null;
+                topPostsTitle.textContent = 'Top Posts in Your Region'; // Reset title
+                postsContainer.innerHTML = '<p class="text-gray-500">Please enter a valid ZIP code to view threads.</p>';
+            }
+        }, 500); // 500ms debounce delay
+
+        // Debounced handler for thread ZIP code input
+        const handleThreadZipInput = debounce(async (event) => {
+            const zipCode = event.target.value.trim();
+            if (/^\d{5}$/.test(zipCode)) {
+                const locationData = await fetchCity(zipCode);
+                if (locationData) {
+                    threadCityDisplay.textContent = `${locationData.city}`;
+                } else {
+                    threadCityDisplay.textContent = 'Invalid ZIP code';
+                }
+            } else {
+                threadCityDisplay.textContent = '';
+            }
+        }, 500); // 500ms debounce delay
+
+        // Event listeners for ZIP code inputs
+        locationZipInput.addEventListener('input', handleLocationZipInput);
+        threadZipCodeInput.addEventListener('input', handleThreadZipInput);
 
         // Function to open comments modal
         function openCommentsModal(thread) {
@@ -209,7 +321,7 @@
 
             const threadLocation = document.createElement('p');
             threadLocation.className = 'text-gray-600';
-            threadLocation.textContent = `City: ${thread.city}, Zip Code: ${thread.zip_code}`;
+            threadLocation.textContent = `Location: ${thread.city}, ${thread.zip_code}`;
 
             threadDiv.appendChild(threadHeader);
             threadDiv.appendChild(threadLocation);
@@ -217,34 +329,61 @@
             return threadDiv;
         }
 
-        // Function to display threads
+        // Updated displayThreads function with sorting
         async function displayThreads() {
-            // Set a timeout to hide the spinner after 3 seconds
-            setTimeout(() => {
-                loadingIndicator.style.display = 'none';
-            }, 2000);
-        
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            postsContainer.classList.add('hidden');
+
             try {
                 const threads = await getAllThreads();
-                postsContainer.innerHTML = ''; // Clear existing posts
-        
-                if (threads.length === 0) {
-                    postsContainer.innerHTML = '<p class="text-gray-500">No threads available. Be the first to post!</p>';
+
+                if (!currentLocation) {
+                    postsContainer.innerHTML = '<p class="text-gray-500">Please enter your ZIP code to view threads.</p>';
                 } else {
-                    threads.forEach(thread => {
-                        const threadElement = createPostElement(thread);
-                        postsContainer.appendChild(threadElement);
-                    });
+                    // Filter threads based on current location's zip code and city
+                    const filteredThreads = threads.filter(thread => 
+                        thread.zip_code === currentLocation.zip_code && thread.city === currentLocation.city
+                    );
+
+                    if (filteredThreads.length === 0) {
+                        postsContainer.innerHTML = '<p class="text-gray-500">No threads available in your region. Be the first to post!</p>';
+                    } else {
+                        // Calculate total score for each thread
+                        const threadsWithScores = await Promise.all(filteredThreads.map(async (thread) => {
+                            const commentsData = await getCommentsWithUpvotes(thread.id);
+                            const commentsUpvotesSum = commentsData.comments.reduce((sum, comment) => {
+                                const upvote = Number(comment.upvotes);
+                                return sum + (isNaN(upvote) ? 0 : upvote);
+                            }, 0);
+                            const threadUpvotes = Number(thread.upvotes);
+                            const totalScore = (isNaN(threadUpvotes) ? 0 : threadUpvotes) + (isNaN(commentsUpvotesSum) ? 0 : commentsUpvotesSum);
+                            return { ...thread, totalScore };
+                        }));
+
+                        // Sort threads based on totalScore in descending order
+                        threadsWithScores.sort((a, b) => b.totalScore - a.totalScore);
+
+                        // Clear existing posts
+                        postsContainer.innerHTML = '';
+
+                        // Create and append sorted thread elements
+                        threadsWithScores.forEach(thread => {
+                            const threadElement = createPostElement(thread);
+                            postsContainer.appendChild(threadElement);
+                        });
+                    }
                 }
-        
-                // Show posts container
+
+                // Hide loading indicator and show posts container
+                loadingIndicator.style.display = 'none';
                 postsContainer.classList.remove('hidden');
             } catch (error) {
                 console.error('Error displaying threads:', error);
                 alert('Failed to load threads. Please try again later.');
+                loadingIndicator.style.display = 'none';
             }
         }
-        
 
         // Function to fetch and display comments
         async function fetchComments(threadId) {
@@ -290,6 +429,7 @@
                 try {
                     await incrementUpvote(currentThreadId, comment.id);
                     await fetchComments(currentThreadId);
+                    await displayThreads(); // Refresh threads to update sorting
                 } catch (error) {
                     console.error('Error incrementing upvote:', error);
                     alert('Failed to upvote. Please try again.');
@@ -304,6 +444,7 @@
                 try {
                     await decrementUpvote(currentThreadId, comment.id);
                     await fetchComments(currentThreadId);
+                    await displayThreads(); // Refresh threads to update sorting
                 } catch (error) {
                     console.error('Error decrementing upvote:', error);
                     alert('Failed to downvote. Please try again.');
@@ -324,17 +465,20 @@
         threadForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const threadName = document.getElementById('threadNameInput').value.trim();
-            const city = document.getElementById('cityInput').value.trim();
-            const zipCode = document.getElementById('zipCodeInput').value.trim();
+            const zipCode = document.getElementById('threadZipCodeInput').value.trim();
+            const cityText = threadCityDisplay.textContent;
 
-            if (!threadName || !city || !zipCode) {
-                alert('Please fill in all fields.');
+            if (!threadName || !zipCode || !cityText || cityText === 'Invalid ZIP code') {
+                alert('Please enter a valid thread title and ZIP code.');
                 return;
             }
+
+            const city = cityText;
 
             try {
                 await addThread(threadName, zipCode, city);
                 threadForm.reset(); // Clear all inputs
+                threadCityDisplay.textContent = '';
                 await displayThreads(); // Refresh the threads list
             } catch (error) {
                 console.error('Error adding thread:', error);
@@ -356,14 +500,17 @@
                 await addCommentToThread(currentThreadId, commentText);
                 commentForm.reset();
                 await fetchComments(currentThreadId);
+                await displayThreads(); // Refresh threads to update sorting
             } catch (error) {
                 console.error('Error adding comment:', error);
                 alert('Failed to add comment. Please try again.');
             }
         });
 
-        // Display threads on page load
-        displayThreads();
+        // Initialize by displaying threads if location is already set
+        if (currentLocation) {
+            displayThreads();
+        }
     </script>
 </body>
 </html>
