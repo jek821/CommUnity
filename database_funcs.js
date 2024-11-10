@@ -148,3 +148,23 @@ export async function getCommentsWithUpvotes(threadId) {
     throw new Error("Failed to retrieve comments and thread name");
   }
 }
+
+// Function to get thread name by thread ID
+export async function getThreadNameById(threadId) {
+  try {
+    const threadDocRef = doc(db, "Threads", threadId);
+    const threadDoc = await getDoc(threadDocRef);
+
+    if (!threadDoc.exists()) {
+      throw new Error("Thread does not exist");
+    }
+
+    // Retrieve the thread name from the document data
+    const threadName = threadDoc.data().thread_name;
+    return threadName;
+  } catch (error) {
+    console.error("Error fetching thread name:", error);
+    throw new Error("Failed to retrieve thread name");
+  }
+}
+
