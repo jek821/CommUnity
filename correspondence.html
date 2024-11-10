@@ -67,38 +67,48 @@
     <script type="module">
         // Import necessary functions and Firebase configurations
         import { getAllEmailIds, getEmailDetailsById } from './Javascript_API_POST_function.js';
+        import { getThreadNameById } from './database_funcs.js'; // Add this line
         import { db } from './firebase-config.js';
     
         // Get DOM elements
         const emailsContainer = document.getElementById('emailsContainer');
         const loadingIndicator = document.getElementById('loading');
     
-        /**
+       /**
          * Displays an individual email on the site.
          * @param {Object} email - The email details containing thread_id and text.
          * @param {string} docId - The Document ID of the email.
          */
-        function displayEmail(email, docId) {
+        async function displayEmail(email, docId) {
             const emailDiv = document.createElement('div');
             emailDiv.className = 'bg-gray-100 p-4 rounded shadow-md';
-    
+        
             const emailHeader = document.createElement('div');
             emailHeader.className = 'flex justify-between items-center mb-2';
-    
-            // Display Thread ID and Document ID
+        
+            // Retrieve the thread name using email.thread_id
+            let threadName;
+            try {
+                threadName = await getThreadNameById(email.thread_id);
+            } catch (error) {
+                console.error("Error fetching thread name:", error);
+                threadName = `Thread Name: ${email.thread_id}`; // Fallback to thread ID if there's an error
+            }
+        
+            // Display Thread Name and Document ID
             const emailTitle = document.createElement('span');
             emailTitle.className = 'text-xl font-bold text-blue-600';
-            emailTitle.innerHTML = `Thread ID: ${email.thread_id} <br> <span class="text-sm font-normal text-gray-600"></span>`;
-    
+            emailTitle.innerHTML = `Thread Name: ${threadName} <br> <span class="text-sm font-normal text-gray-600">Document ID: ${docId}</span>`;
+        
             emailHeader.appendChild(emailTitle);
-    
+        
             const emailText = document.createElement('p');
             emailText.className = 'text-gray-800 whitespace-pre-wrap'; // Preserve formatting
             emailText.textContent = email.text;
-    
+        
             emailDiv.appendChild(emailHeader);
             emailDiv.appendChild(emailText);
-    
+        
             emailsContainer.appendChild(emailDiv);
         }
     
