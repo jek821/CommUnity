@@ -1,15 +1,12 @@
 services:
-  - type: web
+  - type: static
     name: CommUnity
-    env: node
-    plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: ""  # No build command since it’s pure HTML/JavaScript
+    staticPublishPath: .  # Render will serve files from the root directory
     envVars:
       - key: NODE_ENV
         value: production
-      # Add missing environment variables for:
       - key: FIREBASE_CONFIG
-        sync: false # For security
+        sync: false
       - key: SENDGRID_API_KEY
         sync: false
