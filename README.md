@@ -51,7 +51,7 @@ CommUnity addresses these issues by providing a centralized platform where:
 - **Services Used**:
   - **Authentication**: Secure user registration and login.
   - **Firestore Database**: Stores user submissions, votes, and messages.
-  - **Cloud Functions**: Manages backend logic and integrates with APIs like GPT.
+  - **Cloud Functions**: Custom Flask API hosted on AWS Lambda to allow for stable interaction and use of Open AI API
 
 ### AI Integration
 
@@ -67,16 +67,6 @@ CommUnity addresses these issues by providing a centralized platform where:
 - **Capabilities**:
   - Will enable sending formatted emails to officials.
   - Ensures deliverability by adhering to email standards.
-
-## Demo Walkthrough
-
-1. **Idea Submission**: Users submit ideas or concerns.
-2. **Community Voting**: Other users upvote to show support.
-3. **Opinion Input**: Community members add insights to enhance discussions.
-4. **AI Synthesis**: GPT API synthesizes input into a powerful argument.
-5. **Email Dispatch**: Synthesized arguments are sent to officials (future feature with SendGrid).
-6. **Response Handling**: Replies are captured and displayed.
-7. **Ongoing Dialogue**: Community engagement continues with updates and additional feedback.
 
 ## Accomplishments That We're Proud Of
 
