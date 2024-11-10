@@ -41,3 +41,26 @@ export async function saveEmailToFirestore(text, thread_id) {
         return null;  // Return null if there was an error
     }
 }
+
+
+// Function to retrieve thread_id and text fields by email document ID
+export async function getEmailDetailsById(emailDocId) {
+    try {
+        const emailDocRef = doc(db, "emails", emailDocId); // Use "emails" as the collection name
+        const emailDoc = await getDoc(emailDocRef);
+
+        if (!emailDoc.exists()) {
+            throw new Error("Email document does not exist");
+        }
+
+        // Extract the data fields
+        const data = emailDoc.data();
+        const threadId = data.thread_id;
+        const text = data.text;
+
+        return { thread_id: threadId, text: text };
+    } catch (error) {
+        console.error("Error retrieving email details:", error);
+        return null; // Return null if there was an error
+    }
+}
