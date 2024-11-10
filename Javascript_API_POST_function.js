@@ -65,3 +65,18 @@ async function sendPostRequest(data) {
         return null;  // Return null if there was an error
     }
 }
+
+
+async function saveEmailToFirestore(text, thread_id) {
+    try {
+        const docRef = await addDoc(collection(db, "emails"), {
+            text: text,
+            thread_id: thread_id
+        });
+        console.log("Document written with ID: ", docRef.id);
+        return docRef.id;  // Return the document ID if needed
+    } catch (error) {
+        console.error("Error adding document to Firebase:", error);
+        return null;  // Return null if there was an error
+    }
+}
