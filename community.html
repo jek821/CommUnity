@@ -212,6 +212,12 @@
             deleteCommentFromThread
         } from './database_funcs.js';
 
+        // Importing sendPostRequest and saveEmailToFirestore
+        import {
+            sendPostRequest,
+            saveEmailToFirestore
+        } from './Javascript_API_POST_function.js';
+
         const threadForm = document.getElementById('threadForm');
         const postsContainer = document.getElementById('posts-container');
         const loadingIndicator = document.getElementById('loading');
@@ -400,8 +406,29 @@
                 );
             });
 
+            // Resolve Button
+            const resolveButton = document.createElement('button');
+            resolveButton.className = 'text-green-500 hover:text-green-700 flex items-center';
+            resolveButton.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Resolve';
+            resolveButton.addEventListener('click', async () => {
+                try {
+                    // Call getCommentsWithUpvotes(thread.id)
+                    const data = await getCommentsWithUpvotes(thread.id);
+                    // The output of that would be used as the parameter to call sendPostRequest(data)
+                    const emailContent = await sendPostRequest(JSON.stringify(data));
+                    // Then that output would be sent here along with the thread_id
+                    await saveEmailToFirestore(emailContent, thread.id);
+                    alert('Email generated and saved successfully.');
+                } catch (error) {
+                    console.error('Error resolving thread:', error);
+                    alert('Failed to resolve thread. Please try again.');
+                }
+            });
+
             threadActionsDiv.appendChild(viewCommentsButton);
             threadActionsDiv.appendChild(deleteThreadButton);
+            threadActionsDiv.appendChild(resolveButton); // Added Resolve Button
+
 
             threadHeader.appendChild(threadTitle);
             threadHeader.appendChild(threadActionsDiv);
@@ -635,6 +662,8 @@
                 closeDeleteConfirmation();
             }
         });
+
+        
     </script>
 </body>
 </html>

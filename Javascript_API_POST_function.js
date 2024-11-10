@@ -1,50 +1,8 @@
 // Endpoint URL of your deployed Flask API
 const endpoint = "https://ltz8klakk4.execute-api.us-east-1.amazonaws.com/dev/generate-email";
 
-
-// Function to get comments with upvotes
-export async function getCommentsWithUpvotes(threadId) {
-  try {
-    const threadDocRef = doc(db, "Threads", threadId);
-    const threadDoc = await getDoc(threadDocRef);
-
-    if (!threadDoc.exists()) {
-      throw new Error("Thread does not exist");
-    }
-
-    const threadName = threadDoc.data().thread_name;
-    const threadZip = threadDoc.data().zip_code;
-    const threadCity = threadDoc.data().city;
-
-    const commentsRef = collection(db, "Threads", threadId, "Comments");
-    const snapshot = await getDocs(commentsRef);
-
-    const comments = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      comments.push({
-        id: doc.id,
-        text: data.text,
-        upvotes: data.upvotes || 0
-      });
-    });
-
-    return {
-      thread_name: threadName,
-      thread_zip: threadZip,
-      thread_city: threadCity,
-      comments: comments
-    };
-  } catch (error) {
-    console.error("Error fetching comments with upvotes:", error);
-    throw new Error("Failed to retrieve comments and thread name");
-  }
-}
-
-
-
 // Function to make the POST request and return the unpacked email content
-async function sendPostRequest(data) {
+export async function sendPostRequest(data) {
     try {
         const response = await fetch(endpoint, {
             method: "POST",
@@ -66,8 +24,11 @@ async function sendPostRequest(data) {
     }
 }
 
+import { db } from './firebase-config.js';
+import { addDoc, collection } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 
-async function saveEmailToFirestore(text, thread_id) {
+// Function to save email to Firestore
+export async function saveEmailToFirestore(text, thread_id) {
     try {
         const docRef = await addDoc(collection(db, "emails"), {
             text: text,
