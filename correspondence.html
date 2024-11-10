@@ -1,38 +1,132 @@
+<!-- correspondence.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correspondence - Mail Viewer</title>
-    <!-- Tailwind CSS for styling -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Correspondence Viewer - CommUnity</title>
+    <!-- Include Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Include Roboto Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        /* Loading Spinner Styles */
+        #loading {
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        /* Email Container Styles */
+        .email-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-blue-100 text-gray-800">
+    <!-- Header -->
     <header class="text-center py-6 bg-blue-600 text-white shadow-md">
-        <h1 class="text-3xl font-bold">Correspondence Viewer</h1>
+        <h1 class="text-4xl font-bold">Correspondence Viewer</h1>
+        <nav class="mt-4 flex justify-center space-x-4">
+            <a href="index.html" class="text-white hover:text-blue-300 flex items-center">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="correspondence.html" class="text-white hover:text-blue-300 flex items-center">
+                <i class="fas fa-envelope mr-2"></i> Correspondence
+            </a>
+            <a href="login.html" class="text-white hover:text-blue-300 flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </a>
+        </nav>
     </header>
 
-    <main class="max-w-2xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
-        <!-- Dynamic Mail Content Section -->
-        <section id="mail-content" class="p-4 border rounded-md shadow-md bg-gray-50">
-            <h2 id="mail-subject" class="text-2xl font-semibold text-blue-600 mb-2">Mail Subject</h2>
-            <p id="mail-location" class="text-gray-600">Location: City, Zip Code</p>
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
+        <!-- Correspondence Display Section -->
+        <section>
+            <h2 class="text-2xl font-semibold mb-4">Email Correspondence</h2>
+            <div id="loading" class="flex justify-center items-center">
+                <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent border-solid rounded-full animate-spin"></div>
+            </div>
+            <div id="emailsContainer" class="space-y-4 email-container">
+                <!-- Emails will be dynamically populated here -->
+            </div>
         </section>
     </main>
 
-    <!-- Script to dynamically set email content -->
-    <script>
-        // Function to set mail content
-        function setMailContent(subject, location) {
-            document.getElementById('mail-subject').textContent = subject;
-            document.getElementById('mail-location').textContent = `Location: ${location}`;
+    <!-- Scripts -->
+     <!-- correspondence.html -->
+    <!-- ... (rest of your HTML code remains the same) ... -->
+    <script type="module">
+        // Import necessary functions and Firebase configurations
+        import { getAllEmailIds, getEmailDetailsById } from './Javascript_API_POST_function.js';
+        import { db } from './firebase-config.js';
+    
+        // Get DOM elements
+        const emailsContainer = document.getElementById('emailsContainer');
+        const loadingIndicator = document.getElementById('loading');
+    
+        /**
+         * Displays an individual email on the site.
+         * @param {Object} email - The email details containing thread_id and text.
+         * @param {string} docId - The Document ID of the email.
+         */
+        function displayEmail(email, docId) {
+            const emailDiv = document.createElement('div');
+            emailDiv.className = 'bg-gray-100 p-4 rounded shadow-md';
+    
+            const emailHeader = document.createElement('div');
+            emailHeader.className = 'flex justify-between items-center mb-2';
+    
+            // Display Thread ID and Document ID
+            const emailTitle = document.createElement('span');
+            emailTitle.className = 'text-xl font-bold text-blue-600';
+            emailTitle.innerHTML = `Thread ID: ${email.thread_id} <br> <span class="text-sm font-normal text-gray-600">Document ID: ${docId}</span>`;
+    
+            emailHeader.appendChild(emailTitle);
+    
+            const emailText = document.createElement('p');
+            emailText.className = 'text-gray-800 whitespace-pre-wrap'; // Preserve formatting
+            emailText.textContent = email.text;
+    
+            emailDiv.appendChild(emailHeader);
+            emailDiv.appendChild(emailText);
+    
+            emailsContainer.appendChild(emailDiv);
         }
-
-        // Example usage - Replace with dynamic values
-        // Example email data
-        const emailSubject = "Tree";
-        const emailLocation = "New York City, 10002";
-        setMailContent(emailSubject, emailLocation);
+    
+        // Main execution
+        (async () => {
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+    
+            // Get all email document IDs
+            const emailIds = await getAllEmailIds();
+    
+            // Remove loading indicator
+            loadingIndicator.style.display = 'none';
+    
+            if (emailIds.length > 0) {
+                // For each email ID, get the email details and display them
+                for (const docId of emailIds) {
+                    const emailDetails = await getEmailDetailsById(docId);
+                    if (emailDetails) {
+                        displayEmail(emailDetails, docId);
+                    } else {
+                        console.error(`Failed to retrieve email with ID: ${docId}`);
+                    }
+                }
+            } else {
+                emailsContainer.innerHTML = '<p class="text-red-500">No emails found.</p>';
+            }
+        })();
     </script>
-</body>
-</html>
+    </body>
+    </html>

@@ -1,3 +1,4 @@
+// Javascript_API_POST_function.js
 // Endpoint URL of your deployed Flask API
 const endpoint = "https://ltz8klakk4.execute-api.us-east-1.amazonaws.com/dev/generate-email";
 
@@ -25,8 +26,8 @@ export async function sendPostRequest(data) {
 }
 
 import { db } from './firebase-config.js';
-import { addDoc, collection } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
-
+// Import the necessary functions from Firebase Firestore
+import { addDoc, collection, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
 // Function to save email to Firestore
 export async function saveEmailToFirestore(text, thread_id) {
     try {
@@ -43,10 +44,14 @@ export async function saveEmailToFirestore(text, thread_id) {
 }
 
 
-// Function to retrieve thread_id and text fields by email document ID
+/**
+ * Retrieves email details by Document ID.
+ * @param {string} emailDocId - The Document ID of the email.
+ * @returns {Object|null} - Returns an object containing thread_id and text if successful, otherwise null.
+ */
 export async function getEmailDetailsById(emailDocId) {
     try {
-        const emailDocRef = doc(db, "emails", emailDocId); // Use "emails" as the collection name
+        const emailDocRef = doc(db, "emails", emailDocId); // Reference to the specific document
         const emailDoc = await getDoc(emailDocRef);
 
         if (!emailDoc.exists()) {
@@ -62,5 +67,26 @@ export async function getEmailDetailsById(emailDocId) {
     } catch (error) {
         console.error("Error retrieving email details:", error);
         return null; // Return null if there was an error
+    }
+}
+
+// Javascript_API_POST_function.js
+import { getDocs } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+
+/**
+ * Retrieves all email document IDs from Firestore.
+ * @returns {Array} - An array of email document IDs.
+ */
+export async function getAllEmailIds() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "emails"));
+        const emailIds = [];
+        querySnapshot.forEach(doc => {
+            emailIds.push(doc.id);
+        });
+        return emailIds;
+    } catch (error) {
+        console.error("Error retrieving email IDs:", error);
+        return [];
     }
 }
