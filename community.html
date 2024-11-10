@@ -3,9 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added -->
     <title>Community Hub - Urban Upgrades</title>
     <!-- Include Tailwind CSS for styling -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Include Roboto Font -->
@@ -148,10 +149,12 @@
         <section>
             <!-- Updated Title with id -->
             <h2 id="topPostsTitle" class="text-2xl font-semibold mb-4">Top Posts in Your Region</h2>
-            <!-- Loading Indicator -->
-            <div id="loading" class="text-center mb-4">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <!-- Loading Indicator -->            <!-- Updated Loading Indicator -->
+            <div id="loading" class="flex justify-center items-center h-24" aria-live="polite" aria-busy="true">
+                <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent border-solid rounded-full animate-spin"></div>
             </div>
+            
+    
             <div id="posts-container" class="space-y-4 hidden">
                 <!-- Posts will be dynamically populated here -->
             </div>
@@ -200,7 +203,7 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module">
+    <script type="module" defer>
         import { 
             addThread, 
             getAllThreads, 
