@@ -1,6 +1,12 @@
 # CommUnity
 
 Empowering Local Voices for Urban Transformation
+---
+## VIDEO DEMO 
+![Video Title](https://img.youtube.com/vi/Uzjh4iJJjo4/0.jpg)
+
+[Watch our demo on YouTube](https://youtu.be/Uzjh4iJJjo4)
+
 
 ---
 
@@ -33,9 +39,6 @@ CommUnity addresses these issues by providing a centralized platform where:
 
 ## Technical Implementation
 
-### Architecture Overview
-
-*Insert an architecture diagram illustrating system components and data flow.*
 
 ### Frontend
 
