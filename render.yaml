@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: CommUnity
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Add missing environment variables for:
+      - key: FIREBASE_CONFIG
+        sync: false # For security
+      - key: SENDGRID_API_KEY
+        sync: false
