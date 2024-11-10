@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Correspondence - Mail Viewer</title>
+    <!-- Tailwind CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <header class="text-center py-6 bg-blue-600 text-white shadow-md">
+        <h1 class="text-3xl font-bold">Correspondence Viewer</h1>
+    </header>
+
+    <main class="max-w-2xl mx-auto p-6 mt-10 bg-white rounded-lg shadow-lg">
+        <!-- Dynamic Mail Content Section -->
+        <section id="mail-content" class="p-4 border rounded-md shadow-md bg-gray-50">
+            <h2 id="mail-subject" class="text-2xl font-semibold text-blue-600 mb-2">Mail Subject</h2>
+            <p id="mail-location" class="text-gray-600">Location: City, Zip Code</p>
+        </section>
+    </main>
+
+    <!-- Script to dynamically set email content -->
+    <script>
+        // Function to set mail content
+        function setMailContent(subject, location) {
+            document.getElementById('mail-subject').textContent = subject;
+            document.getElementById('mail-location').textContent = `Location: ${location}`;
+        }
+
+        // Example usage - Replace with dynamic values
+        // Example email data
+        const emailSubject = "Tree";
+        const emailLocation = "New York City, 10002";
+        setMailContent(emailSubject, emailLocation);
+    </script>
+</body>
+</html>
